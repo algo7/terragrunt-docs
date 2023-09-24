@@ -6,10 +6,6 @@ import (
 	"regexp"
 )
 
-type foo struct {
-	A string `hcl:"a, omitempty"`
-}
-
 // extractInputsFromTerragrunt extracts the inputs block from a terragrunt file
 func extractInputsFromTerragrunt(file string) (string, error) {
 	content, err := os.ReadFile(file)
