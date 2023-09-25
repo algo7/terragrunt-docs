@@ -2,12 +2,11 @@ package main
 
 import (
 	"log"
+
+	"github.com/algo7/terragrunt-docs/pkg/parser"
 )
 
 func main() {
-	res, err := extractInputsFromTerragrunt("test.hcl")
-	if err != nil {
-		log.Fatal(err)
-	}
+	res := parser.ExtractInputsFromTerragrunt("test.hcl")
 	log.Println(res)
 }

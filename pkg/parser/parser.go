@@ -16,7 +16,7 @@ var (
 )
 
 // ExtractInputsFromTerragrunt extracts the inputs block from a terragrunt file
-func ExtractInputsFromTerragrunt(file string) (string, error) {
+func ExtractInputsFromTerragrunt(file string) string {
 
 	// Read the file
 	content, err := os.ReadFile(file)
@@ -26,8 +26,8 @@ func ExtractInputsFromTerragrunt(file string) (string, error) {
 	inputsBlockFound := inputsBlockPattern.FindString(string(content))
 
 	if inputsBlockFound == "" {
-		return "Default Settings", nil
+		return "Default Settings"
 	}
 
-	return inputsBlockFound, nil
+	return inputsBlockFound
 }
