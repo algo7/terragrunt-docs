@@ -32,6 +32,7 @@ func ExtractInputsFromTerragrunt(file string) string {
 	return "Default Settings"
 }
 
+// extractInputsContent extracts the content inside the inputs block from a terragrunt file, accounting for comments
 func extractInputsContent(content string) string {
 	// Create a scanner to read lines from the content
 	scanner := bufio.NewScanner(strings.NewReader(content))
