@@ -26,8 +26,8 @@ func main() {
 
 		// Parse all `terragrunt.hcl` files
 		if strings.HasSuffix(info.Name(), "terragrunt.hcl") {
-			_ = parser.ExtractInputsFromTerragrunt(path)
-			// log.Printf("Inputs from %s:\n%s\n%s\n", path, inputs, strings.Repeat("-", 40))
+			inputs := parser.ExtractInputsFromTerragrunt(path)
+			log.Printf("Inputs from %s:\n%s\n%s\n", path, inputs, strings.Repeat("-", 40))
 		}
 		return nil
 	})

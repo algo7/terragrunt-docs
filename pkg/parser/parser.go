@@ -1,7 +1,7 @@
 package parser
 
 import (
-	"log"
+	"bufio"
 	"os"
 	"regexp"
 	"strings"
@@ -26,46 +26,49 @@ func ExtractInputsFromTerragrunt(file string) string {
 	// Use the extractInputsContent function to get the content inside the inputs block
 	inputsContent := extractInputsContent(string(content))
 	if inputsContent != "" {
-		log.Println(inputsContent)
 		return inputsContent
 	}
 
 	return "Default Settings"
 }
 
-// extractInputsContent extracts the content inside the inputs block from a terragrunt file
 func extractInputsContent(content string) string {
-	// Find the start of the "inputs" keyword
-	inputsPos := strings.Index(content, "inputs")
-	if inputsPos == -1 {
-		return ""
-	}
+	// Create a scanner to read lines from the content
+	scanner := bufio.NewScanner(strings.NewReader(content))
 
-	// Find the first opening curly brace after "inputs"
-	startPos := strings.Index(content[inputsPos:], "{")
-	if startPos == -1 {
-		return ""
-	}
-	startPos += inputsPos + 6 // Adjust the position relative to the entire content
+	// Initialize a flag to indicate whether we are inside the inputs block
+	insideInputsBlock := false
 
-	// Initialize a counter for open curly braces
-	counter := 1 // Start with 1 because we've already found the opening brace
+	// Create a buffer to store the extracted content
+	var result strings.Builder
 
-	// Start iterating from the character after the found "{"
-	for i := startPos + 1; i < len(content); i++ {
-		if content[i] == '{' {
-			counter++
-		} else if content[i] == '}' {
-			counter--
+	// Iterate through each line of the content
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		// Check if we are inside the inputs block
+		if insideInputsBlock {
+			// If the line is empty or contains '#', it's a comment; skip it
+			if len(line) == 0 || strings.Contains(line, "#") {
+				continue
+			}
+
+			// If the line starts with '}', we've reached the end of the inputs block
+			if strings.HasPrefix(line, "}") {
+				break
+			}
+
+			// Append the line to the result
+			result.WriteString(line)
+			result.WriteString("\n")
+		} else {
+			// Check if the line starts with "inputs = {"
+			if strings.HasPrefix(line, "inputs = {") {
+				insideInputsBlock = true
+			}
 		}
-
-		// If the counter returns to zero, we've found the end of the inputs block
-		if counter == 0 {
-			// Return the content inside the curly braces
-			return content[startPos+1 : i]
-		}
 	}
 
-	// If we reach here, there's no matching closing brace
-	return ""
+	// Return the content inside the curly braces as a string
+	return result.String()
 }
