@@ -8,14 +8,14 @@ import (
 )
 
 const (
-	inputBlockRegex = `(?s)inputs\s*=\s*{.*?}`
+	inputBlockRegex = `(?s)inputs\s*=\s*{\s*(.*?)\s*}`
 )
 
 var (
 	inputsBlockPattern = regexp.MustCompile(inputBlockRegex)
 )
 
-// ExtractInputsFromTerragrunt extracts the inputs block from a terragrunt file
+// ExtractInputsFromTerragrunt extracts the content inside the inputs block from a terragrunt file
 func ExtractInputsFromTerragrunt(file string) string {
 
 	// Read the file
@@ -23,11 +23,10 @@ func ExtractInputsFromTerragrunt(file string) string {
 	utils.ErrorHandler(err)
 
 	// Match
-	inputsBlocks := inputsBlockPattern.FindString(string(content))
-
-	if inputsBlocks == "" {
-		return "Default Settings"
+	matches := inputsBlockPattern.FindStringSubmatch(string(content))
+	if len(matches) > 1 {
+		return matches[1]
 	}
 
-	return inputsBlocks
+	return "Default Settings"
 }
