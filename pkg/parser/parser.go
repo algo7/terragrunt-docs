@@ -23,11 +23,11 @@ func ExtractInputsFromTerragrunt(file string) string {
 	utils.ErrorHandler(err)
 
 	// Match
-	inputsBlockFound := inputsBlockPattern.FindString(string(content))
+	inputsBlocks := inputsBlockPattern.FindString(string(content))
 
-	if inputsBlockFound == "" {
+	if inputsBlocks == "" {
 		return "Default Settings"
 	}
 
-	return inputsBlockFound
+	return inputsBlocks
 }
