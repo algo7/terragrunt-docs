@@ -1,6 +1,8 @@
 package utils
 
-import "log"
+import (
+	"log"
+)
 
 // ErrorHandler is a generic error handler
 func ErrorHandler(err error) {
