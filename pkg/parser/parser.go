@@ -2,6 +2,7 @@ package parser
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"regexp"
@@ -42,30 +43,45 @@ type KeyValue struct {
 
 // extractInputsContent extracts the content inside the inputs block from a terragrunt file, accounting for comments
 func extractInputsContent(content string) {
-	// Create a scanner to read lines from the content
-	scanner := bufio.NewScanner(strings.NewReader(content))
+	// Split the content into lines
+	lines := strings.Split(content, "\n")
 
-	// Initialize a variable to inidicate whether we are inside the inputs block
-	insideInputsBlock := false
+	// Initialize a variable to indicate whether we are inside the inputs block
+	inputsBlockStarts := -1
+
+	// Initialize a variable to hold the line number of the last closing curly brace
+	inputsBlockEnds := -1
 
 	// Iterate through each line of the content
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		// Skip empty lines and comments
-		if len(line) == 0 || strings.Contains(line, "#") {
-			continue
-		}
+	for lineNumber, line := range lines {
 
 		// Look for the inputs block
 		if strings.TrimSpace(strings.Split(line, "=")[0]) == "inputs" {
-			insideInputsBlock = true
+			// +1 cuz the line number starts from 0
+			inputsBlockStarts = lineNumber + 1
 			continue
 		}
 
-		if insideInputsBlock {
-			log.Println(line)
+		// If inside the inputs block and the current line contains a closing curly brace, record its line number
+		if inputsBlockStarts != -1 && strings.TrimSpace(line) == "}" {
+			// +1 cuz the line number starts from 0
+			inputsBlockEnds = lineNumber + 1
 		}
-
 	}
+
+	log.Printf("Input blocks start at line %d and end at line %d\n", inputsBlockStarts, inputsBlockEnds)
+
+	// If we found the line number of the last closing curly brace, use bufio.Scanner to parse the content above it
+	scanner := bufio.NewScanner(strings.NewReader(strings.Join(lines[inputsBlockStarts:inputsBlockEnds-1], "\n")))
+	for scanner.Scan() {
+		line := scanner.Text()
+		// Process the content above the last closing curly brace
+		fmt.Println(line)
+	}
+
 }
+
+// Skip empty lines and comments
+// if len(line) == 0 || strings.Contains(line, "#") {
+// 	continue
+// }
