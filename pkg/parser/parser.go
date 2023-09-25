@@ -2,6 +2,7 @@ package parser
 
 import (
 	"bufio"
+	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -24,52 +25,47 @@ func ExtractInputsFromTerragrunt(file string) string {
 	utils.ErrorHandler(err)
 
 	// Use the extractInputsContent function to get the content inside the inputs block
-	inputsContent := extractInputsContent(string(content))
-	if inputsContent != "" {
-		return inputsContent
-	}
+	extractInputsContent(string(content))
+
+	// if inputsContent != "" {
+	// 	return inputsContent
+	// }
 
 	return "Default Settings"
 }
 
+// KeyValue represents a key-value pair.
+type KeyValue struct {
+	Key   string
+	Value string
+}
+
 // extractInputsContent extracts the content inside the inputs block from a terragrunt file, accounting for comments
-func extractInputsContent(content string) string {
+func extractInputsContent(content string) {
 	// Create a scanner to read lines from the content
 	scanner := bufio.NewScanner(strings.NewReader(content))
 
-	// Initialize a flag to indicate whether we are inside the inputs block
+	// Initialize a variable to inidicate whether we are inside the inputs block
 	insideInputsBlock := false
-
-	// Create a buffer to store the extracted content
-	var result strings.Builder
 
 	// Iterate through each line of the content
 	for scanner.Scan() {
 		line := scanner.Text()
 
-		// Check if we are inside the inputs block
-		if insideInputsBlock {
-			// If the line is empty or contains '#', it's a comment; skip it
-			if len(line) == 0 || strings.Contains(line, "#") {
-				continue
-			}
-
-			// If the line starts with '}', we've reached the end of the inputs block
-			if strings.HasPrefix(line, "}") {
-				break
-			}
-
-			// Append the line to the result
-			result.WriteString(line)
-			result.WriteString("\n")
-		} else {
-			// Check if the line starts with "inputs = {"
-			if strings.HasPrefix(line, "inputs = {") {
-				insideInputsBlock = true
-			}
+		// Skip empty lines and comments
+		if len(line) == 0 || strings.Contains(line, "#") {
+			continue
 		}
-	}
 
-	// Return the content inside the curly braces as a string
-	return result.String()
+		// Look for the inputs block
+		if strings.TrimSpace(strings.Split(line, "=")[0]) == "inputs" {
+			insideInputsBlock = true
+			continue
+		}
+
+		if insideInputsBlock {
+			log.Println(line)
+		}
+
+	}
 }
