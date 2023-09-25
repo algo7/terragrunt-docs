@@ -14,4 +14,12 @@ include "envcommon" {
 inputs = {
   # Certificate
   ca_cert_identifier = "rds-ca-rsa2048-g1"
+  ami_id             = "ami-2222222222222"
+
+  # VM Configurations
+  vm_config = {
+    instance_type = "t3a.medium"
+    volume_size   = 30
+    count         = 4
+  }
 }
