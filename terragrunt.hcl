@@ -18,8 +18,12 @@ inputs = {
 
   # VM Configurations
   vm_config = {
-    instance_type = "t3a.medium"
-    volume_size   = 30
-    count         = 4
+    instance_type = {
+      name = "t2.micro"
+      bits = 64
+    }
+    volume_size = 30
+    count       = 4
   }
 }
+
