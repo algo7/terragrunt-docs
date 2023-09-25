@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	inputBlockRegex = `(?s)inputs\s*=\s*{\s*(.*?)\s*}`
+	inputsBlockRegex = `(?s)inputs\s*=\s*{\s*(.*?)\s*}`
 )
 
 var (
-	inputsBlockPattern = regexp.MustCompile(inputBlockRegex)
+	inputsBlockPattern = regexp.MustCompile(inputsBlockRegex)
 )
 
 // ExtractInputsFromTerragrunt extracts the content inside the inputs block from a terragrunt file
